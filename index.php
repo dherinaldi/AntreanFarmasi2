@@ -116,7 +116,7 @@ ini_set('display_errors', 1);
     <div class="main-layout">
         <div class="left-section">
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/TK6qVT2w0W0?autoplay=0&mute=0&loop=1&playlist=TK6qVT2w0W0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/TK6qVT2w0W0?autoplay=0&mute=0&loop=0&playlist=TK6qVT2w0W0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
             <div id="nama-dipanggil" class="animate__animated animate__fadeIn">
                 <div class="label-panggil">PASIEN DIPANGGIL:</div>

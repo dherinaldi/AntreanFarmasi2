@@ -1,10 +1,13 @@
 <?php
-date_default_timezone_set('Asia/Jakarta');
-if (isset($_REQUEST['cetak'])) {
+    date_default_timezone_set('Asia/Jakarta');
+    $date    = date('Y-m-d');
+    $tanggal = '';
+
+    if (isset($_REQUEST['cetak'])) {
     $antrian = $_REQUEST['no_antrian'];
-    $jenis = ($_REQUEST['racikan'] == 0) ? 'NON RACIKAN' : 'RACIKAN';   
-    $tanggal = ($_REQUEST['tanggal'] != null)?$_REQUEST['tanggal']:date('Y-m-d');
-}
+    $jenis   = ($_REQUEST['racikan'] == 0) ? 'NON RACIKAN' : 'RACIKAN';
+    $tanggal = (isset($_REQUEST['tanggal']) && $_REQUEST['tanggal'] != '') ? $_REQUEST['tanggal'] : $date;
+    }
 ?>
 <html>
 <style>
@@ -112,7 +115,7 @@ body.receipt .sheet {
         <p class="antrian_head1"> Antrian Farmasi </p>
         <p class="antrian_head1"> <?php echo $jenis ?> </p>
         <p class="antrian"> <?php echo $antrian ?> </p>
-        <p class="antrian_tanggal"> <?php echo $tanggal ;?></p>
+        <p class="antrian_tanggal"> <?php echo $tanggal; ?></p>
         <p class="antrian_foot">Semoga Lekas Sembuh </p>
     </div>
     <div class="page-break"></div>
@@ -120,7 +123,7 @@ body.receipt .sheet {
         <p class="antrian_head1"> Antrian Farmasi </p>
         <p class="antrian_head1"> <?php echo $jenis ?> </p>
         <p class="antrian"> <?php echo $antrian ?> </p>
-        <p class="antrian_tanggal"> <?php echo $tanggal ;?></p>
+        <p class="antrian_tanggal"> <?php echo $tanggal; ?></p>
         <p class="antrian_foot">Semoga Lekas Sembuh </p>
     </div>
 </body>
