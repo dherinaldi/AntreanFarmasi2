@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Antrian Farmasi</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="myCss.css">
+</head>
+
+<body>
+
+    <div id="digital-clock" style="text-align: left">Memuat waktu...</div>
+
+
+    <div class="main-layout">
+        <div class="video-section">
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <iframe
+                        src="https://www.youtube.com/embed/R4r5V6fkIY4?autoplay=1&mute=1&loop=1&playlist=R4r5V6fkIY4"
+                        title="Profil RS Ainun Habibie Gorontalo" frameborder="0" allow="autoplay; encrypted-media"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <hr>
+            <div id="nama-dipanggil"
+                style="height: 100%; background-color:rgb(248, 62, 5); text-align: center; padding: 20px;">
+                <br>
+                <span id="nama-panggilan" style="font-size: 25px;">-</span>
+                <br>
+                <br>
+                <h1 id="deskPangil"></h1>
+            </div>
+        </div>
+
+        <div class="antrian-container">
+            <div class="column" id="belum_diterima">
+                <h2 id="jumlah-belum" style="font-size: 50px; font-weight:bold; color: #DC2525">000</h2>
+                <h2>Belum Dilayani</h2>
+                <div class="column-content"></div>
+            </div>
+            <div class="column" id="dilayani">
+                <h2 id="jumlah-dilayani" style="font-size: 50px; font-weight:bold; color: #FEBA17">000</h2>
+                <h2>Sedang Dilayani</h2>
+                <div class="column-content"></div>
+            </div>
+            <div class="column" id="selesai">
+                <h2 id="jumlah-selesai" style="font-size: 50px; font-weight:bold; color: #06923E">000</h2>
+                <h2>Selesai Dilayani</h2>
+                <div class="column-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function updateClock() {
+        const clockElem = document.getElementById("digital-clock");
+        if (!clockElem) return;
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, "0");
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const seconds = now.getSeconds().toString().padStart(2, "0");
+        clockElem.textContent =
+            `DISPLAY ANTRIAN APOTEK RAWAT JALAN RSUD Giri Emas - <?= date('d-m-Y') ?> ${hours}:${minutes}:${seconds}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function sensorNama(nama) {
+        if (nama.length <= 2) return nama;
+        const awal = nama.slice(0, 2);
+        const akhir = nama.slice(-1);
+        const tengah = "*".repeat(nama.length - 3);
+        return awal + tengah + akhir;
+    }
+
+    function formatNama(nama) {
+        nama = nama.replace(/[^a-zA-Z\s]/g, "").trim();
+        return nama.split(" ").map(word => {
+            if (word.length === 0) return "";
+            return word[0].toUpperCase() + word.slice(1).toLowerCase();
+        }).join(" ");
+    }
+
+    let selectedVoice = null;
+
+    function loadVoices() {
+        const voices = speechSynthesis.getVoices();
+        selectedVoice = voices.find(
+            (voice) =>
+            voice.lang === "id-ID" &&
+            voice.name.toLowerCase().includes("google")
+        );
+
+        if (!selectedVoice) {
+            selectedVoice = voices.find((voice) => voice.lang === "id-ID");
+        }
+    }
+
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function speakNama(nama) {
+        if ("speechSynthesis" in window) {
+            const cleanedNama = formatNama(nama);
+            const text = cleanedNama;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "id-ID";
+            utterance.rate = 1;
+            utterance.pitch = 1;
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+
+            return utterance;
+        } else {
+            alert("Browser Anda tidak mendukung fitur suara.");
+            return null;
+        }
+    }
+
+
+    function tampilkanPanggilan(nama) {
+        document.getElementById('nama-panggilan').innerHTML = nama.replace(/\n/g, "<br>");
+    }
+
+    function loadAntrian() {
+        fetch("get_antrian.php")
+            .then((response) => response.json())
+            .then((data) => {
+                ["belum_diterima", "dilayani", "selesai"].forEach((id) => {
+                    const contentDiv = document.querySelector(`#${id} .column-content`);
+                    contentDiv.innerHTML = "";
+                });
+
+                data.belum_diterima.forEach((item) => {
+                    const isCito = item.CITO === "1" ? "cito animate__animated animate__flash" : "";
+                    const isRacikan = item.RACIKAN === "1" ? '<span class="badge badge-r">R</span>' :
+                        '<span class="badge badge-nr">NR</span>';
+                    const contentDiv = document.querySelector(`#belum_diterima .column-content`);
+                    const div = document.createElement('div');
+                    div.className = `item status-belum ${isCito}`;
+                    div.innerHTML =
+                        `${item.NAMA}<br>${item.ASAL_RUANGAN}<br>${isRacikan} - ${item.TANGGAL}`;
+                    contentDiv.appendChild(div);
+                });
+
+                document.getElementById('jumlah-belum').textContent = data.total.belum_diterima.toString().padStart(
+                    3, '0');
+                document.getElementById('jumlah-dilayani').textContent = data.total.dilayani.toString().padStart(3,
+                    '0');
+                document.getElementById('jumlah-selesai').textContent = data.total.selesai.toString().padStart(3,
+                    '0');
+
+
+                data.dilayani.forEach((item) => {
+                    const contentDiv = document.querySelector(`#dilayani .column-content`);
+                    const div = document.createElement('div');
+                    div.className = `item status-dilayani`;
+                    div.innerHTML = `${item.NAMA}<br>${item.TANGGAL}`;
+                    contentDiv.appendChild(div);
+                });
+
+                data.selesai.forEach((item) => {
+                    const contentDiv = document.querySelector(`#selesai .column-content`);
+                    const div = document.createElement('div');
+                    div.className = `item status-selesai`;
+                    div.innerHTML = `${item.NAMA}<br>${item.TANGGAL}`;
+                    contentDiv.appendChild(div);
+                });
+            })
+            .catch((err) => {
+                console.error("Gagal load data antrian:", err);
+            });
+    }
+
+    function panggilPasien(nama) {
+        fetch('panggil_pasien.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nama
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    tampilkanPanggilan(nama);
+                    speakNama(nama);
+
+                    utterance.onend = () => {
+                        fetch('reset_panggilan.php', {
+                            method: 'POST'
+                        });
+                    };
+                } else {
+                    alert('Gagal memanggil pasien');
+                }
+            })
+            .catch(() => alert('Gagal memanggil pasien'));
+    }
+
+
+
+
+    loadAntrian();
+    setInterval(loadAntrian, 30000);
+
+    let namaTerakhir = '';
+
+    function cekPanggilan() {
+        fetch('last_panggilan.txt?rand=' + Math.random())
+            .then(res => res.text())
+            .then(nama => {
+                nama = nama.trim();
+                if (nama && nama !== namaTerakhir) {
+                    namaTerakhir = nama;
+                    speakNama(nama);
+                    tampilkanPanggilan(nama);
+                } else {
+                    fetch('reset_panggilan.php', {
+                        method: 'POST'
+                    });
+                }
+            });
+    }
+
+    setInterval(cekPanggilan, 4000);
+    </script>
+
+    <div id="running-text-container">
+        <div id="running-text">
+            Selamat datang di Live Antrian Farmasi — Harap tetap tenang dan ikuti petunjuk petugas.
+        </div>
+    </div>
+
+</body>
+
+</html>

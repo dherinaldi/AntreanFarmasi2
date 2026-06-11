@@ -1,0 +1,339 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #e3f2fd, #b2ebf2);
+  color: #004d40;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: 100vh;
+  padding-bottom: 30px;
+  /* untuk space running text */
+}
+
+#digital-clock {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 12px;
+  background: #004d40;
+  color: white;
+  letter-spacing: 1px;
+  flex: 0 0 auto;
+}
+
+.main-layout {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 15px;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* penting untuk flexbox scroll */
+  height: calc(100vh - 56px);
+  /* 56px kira2 tinggi #digital-clock */
+}
+
+.video-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 400px;
+  max-width: 500px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  max-height: 100%;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.video-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.floating-cartoon {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 120px; /* atur sesuai ukuran yang diinginkan */
+  height: auto;
+  z-index: 9999;
+  pointer-events: none; /* agar tidak mengganggu klik elemen lain */
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Area nama yang akan dipanggil di bawah video */
+#nama-dipanggil {
+  flex: 0 0 auto;
+  padding: 12px;
+  background: #004d40;
+  color: #fff;
+  font-size: 1.25rem;
+  text-align: center;
+  min-height: 48px;
+  user-select: none;
+}
+
+/* Container antrian */
+.antrian-container {
+  flex: 2 1 600px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Tiap kolom antrian */
+.column {
+  background-color: #ffffffee;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 77, 64, 0.2);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Judul kolom dengan posisi fixed saat scroll */
+.column h2 {
+  position: sticky;
+  top: 0;
+  background-color: #ffffffee;
+  margin: 0;
+  padding: 10px 0;
+  font-size: 1.3rem;
+  text-align: center;
+  border-bottom: 2px solid #26a69a;
+  color: #00695c;
+  z-index: 10;
+  flex: 0 0 auto;
+}
+
+/* Konten tiap kolom yang scrollable */
+.column-content {
+  overflow-y: auto;
+  padding: 10px 0;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  /* Hapus scrollbar bila tidak ada overflow */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+/* Sembunyikan scrollbar di Chrome, Safari, Opera */
+.column-content::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  background-color: #fafafa;
+  margin: 6px 12px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.item:hover {
+  transform: scale(1.03);
+}
+
+.status-belum {
+  background-color: #f53c04;
+}
+
+.status-dilayani {
+  background-color: #f5dd04;
+}
+
+.status-selesai {
+  background-color: #68fa6d;
+}
+
+.cito {
+  font-weight: bold;
+  color: #d50000;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+  }
+
+  .video-section {
+    max-width: 100%;
+    flex: none;
+    height: auto;
+  }
+
+  .video-container {
+    flex: none;
+    height: auto;
+    max-height: none;
+  }
+
+  #nama-dipanggil {
+    min-height: auto;
+    padding: 10px;
+    font-size: 1.1rem;
+  }
+
+  .antrian-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .column {
+    height: auto;
+  }
+
+  .column-content {
+    overflow-y: visible;
+    scrollbar-width: auto;
+  }
+}
+
+/* Running text container */
+#running-text-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #004d40;
+  color: white;
+  overflow: hidden;
+  height: 30px;
+  line-height: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  user-select: none;
+  color: white;
+}
+
+.badge-r {
+  background-color: #d32f2f;
+  /* merah */
+}
+
+.badge-nr {
+  background-color: #388e3c;
+  /* hijau */
+}
+
+#running-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 25s linear infinite;
+  font-size: 24px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+/* Tambah pointer cursor saat hover di item */
+.item {
+  cursor: pointer;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  user-select: none;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.item:hover {
+  background-color: #f0f8ff;
+}
+
+/* Styling badge sederhana */
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.badge-r {
+  background-color: #04f83d;
+  /* hijau */
+}
+
+.badge-nr {
+  background-color: #dc3545;
+  /* merah */
+}
+
+/* Contoh animasi cito */
+.cito {
+  color: #e55353;
+  font-weight: bold;
+}
+.column-header {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 6px;
+  font-size: 1em;
+  color: #333;
+}
+
+#deskPangil {
+  font-size: 24px;
+  color: rgb(245, 247, 245);
+  margin-top: 5px;
+  font-weight: 500;
+}

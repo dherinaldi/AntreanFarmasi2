@@ -1,0 +1,4 @@
+1. Ubah koneksi database dan eksekusi sql prosedurnya
+2. Untuk memanggil kirim parameter "nama" lalu eksekusi nomor 3
+3. Eksekusi panel_panggil.php dengan //ipweb/app/AntreanFarmasi/panel_panggil.php
+4. untuk display cukup //ipweb/app/AntreanFarmasi/
