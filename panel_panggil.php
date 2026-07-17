@@ -240,6 +240,16 @@
         <div class="section-header">
             <h3 style="color: var(--warning)"><i class="fas fa-inbox"></i> Belum Diterima</h3>
         </div>
+        <div style="margin-bottom:15px;">
+            <input type="text" id="searchBelum" placeholder="Cari NOPEN / Nama Pasien..." style="
+                width:100%;
+                padding:12px 15px;
+                border:1px solid #cbd5e1;
+                border-radius:10px;
+                font-size:14px;
+                outline:none;
+           ">
+        </div>
         <div class="card-table">
             <table>
                 <thead>
@@ -293,7 +303,7 @@
 
     <script>
     let asalMap = {}; // Penyimpan memori asal ruangan secara global
-    let selesaiData = [];
+    let selesaiData = belumData= [];
 
     function loadData() {
         $.getJSON("get_antrian.php", function(data) {
@@ -307,6 +317,7 @@
             });
 
             // 2. Render masing-masing tabel
+            belumData = data.belum_diterima;
             renderTable("#belum", data.belum_diterima, true); // True berarti tampilkan header jika kosong
             renderTable("#dilayani", data.dilayani, false);
 
@@ -373,6 +384,25 @@
         $(targetId).html(html);
     }
 
+    $("#searchBelum").on("keyup", function() {
+
+        const keyword = $(this).val().toLowerCase();
+
+        const filtered = belumData.filter(item => {
+
+            const nopen = (item.NOPEN || "").toLowerCase();
+            const nama = (item.NAMA || "").toLowerCase();
+            const norm = (item.NORM || "").toLowerCase();
+            const antrian = (item.NO_ANTRIAN || "").toLowerCase();
+
+            return nopen.includes(keyword) ||
+                nama.includes(keyword) ||
+                norm.includes(keyword) || antrian.includes(keyword) ;
+        });
+
+        renderTable("#belum", filtered, false);
+    });
+
     $("#searchSelesai").on("keyup", function() {
 
         const keyword = $(this).val().toLowerCase();
@@ -382,10 +412,11 @@
             const nopen = (item.NOPEN || "").toLowerCase();
             const nama = (item.NAMA || "").toLowerCase();
             const norm = (item.NORM || "").toLowerCase();
+            const antrian = (item.NO_ANTRIAN || "").toLowerCase();
 
             return nopen.includes(keyword) ||
                 nama.includes(keyword) ||
-                norm.includes(keyword);
+                norm.includes(keyword) || antrian.includes(keyword) ;
         });
 
         renderTable("#selesai", filtered, false);
@@ -433,31 +464,6 @@
             '_blank'
         );
     }
-
-
-    $('#tabel-antrian tbody').on('click', 'button.cetak', function() {
-        var data = table.row($(this).parents('tr')).data();
-
-        $.ajax({
-            type: 'POST', // mengirim data dengan method POST
-            url: '../nomor-antrian/cetak.php', // url file proses insert data
-            data: {
-                antrian: data["no_antrian"],
-                jenis: data["jenis"],
-                tanggal: data['tanggal'],
-                cetak: 'cetak'
-            },
-            success: function(result) { // ketika proses insert data selesai
-                // jika berhasil
-                var printWindow = window.open('', '_blank');
-                printWindow.document.open();
-                printWindow.document.write(result);
-                printWindow.document.close();
-                printWindow.print();
-            },
-        });
-
-    });
 
     function cetak1(nopen) {
         const url = `../report/cetak_antrian.php?nopen=${encodeURIComponent(nopen)}`;

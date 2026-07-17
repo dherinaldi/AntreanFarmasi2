@@ -21,6 +21,11 @@ $IDRUANGAN = '103010201'; // ID Farmasi
  */
 function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
 {
+    $tanggal = isset($_REQUEST['tanggal']) && strtotime($_REQUEST['tanggal'])
+        ? date('Y-m-d', strtotime($_REQUEST['tanggal']))
+        : date('Y-m-d');
+    #echo $tanggal;
+
     if ($isOrder) {
         // QUERY BELUM DITERIMA (ORDER RESEP)
         $sql = "
@@ -53,7 +58,7 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
         LEFT JOIN layanan.order_detil_resep odr ON odr.ORDER_ID = or2.NOMOR
         WHERE or2.TUJUAN = '$IDRUANGAN'
           AND or2.STATUS = $status
-          AND DATE(or2.TANGGAL) = CURDATE()
+          AND or2.TANGGAL BETWEEN '$tanggal 00:00:00' AND '$tanggal 23:59:59'
         GROUP BY p.NORM
         ORDER BY or2.TANGGAL DESC";
     } else {
@@ -93,8 +98,8 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
         LEFT JOIN pendaftaran.pendaftaran p ON p.NOMOR = k.NOPEN
         LEFT JOIN master.pasien p2 ON p.NORM = p2.NORM
         WHERE k.RUANGAN = '$IDRUANGAN'
-          AND k.STATUS = $status
-          AND DATE(k.MASUK) = CURDATE()
+          AND k.STATUS = $status        
+         AND k.MASUK between '$tanggal 00:00:00' AND '$tanggal 23:59:59'
         GROUP BY p.NORM
         ORDER BY k.MASUK DESC";
     }
