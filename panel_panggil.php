@@ -247,6 +247,7 @@
                         <th width="5%">No</th>
                         <th>NOPEN</th>
                         <th>ANTRIAN</th>
+                        <th>OBAT</th>
                         <th>Nama Pasien</th>
                         <th>Asal Ruangan</th>
                         <th width="20%">Waktu Order</th>
@@ -329,13 +330,13 @@
 
                 if (targetId === '#belum') {
                     actionButton = `
-                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}"  onclick="cetak(this)">
+                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}" data-nama="${x.NAMA}"  onclick="cetak(this)">
                         <i class="fas fa-print"></i> Cetak
                     </button>
                 `;
                 } else {
                     actionButton = `
-                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}"  onclick="cetak(this)">
+                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}" data-nama="${x.NAMA}"  onclick="cetak(this)">
                         <i class="fas fa-print"></i> Cetak
                     </button>
                     <button class="btn-panggil" onclick="panggil('${x.NOPEN}', '${x.NAMA}')">
@@ -348,7 +349,16 @@
                 <tr>
                     <td><span style="font-weight:700; color:#cbd5e1">${i+1}</span></td>
                     <td><code style="font-weight:700; color:var(--primary); background:#eff6ff; padding:4px 8px; border-radius:5px">${x.NOPEN}</code></td>
-                    <td width="10%"><code style="font-weight:700; color:var(--primary); background:#eff6ff; padding:4px 8px; border-radius:5px">${x.NO_ANTRIAN}</code></td>
+                    <td width="10%"><code style="font-weight:700; color:var(--primary); background:#eff6ff; padding:4px 8px; border-radius:5px">${x.NO_ANTRIAN} </code></td>
+                    <td><code style="
+        font-weight:700;
+        color:${x.RACIKAN == 0 ? '#92400e' : '#166534'};
+        background:${x.RACIKAN == 0 ? '#fef3c7' : '#dcfce7'};
+        padding:4px 8px;
+        border-radius:5px;
+    ">
+        ${x.RACIKAN == 0 ? 'NR' : 'R'}
+    </code></td>
                     <td><div style="font-weight:700; font-size:15px">(${x.NORM}) ${x.NAMA}</div></td>
                     <td><span class="badge-ruangan"><i class="fas fa-door-open"></i> ${asalFix}</span></td>
                     <td style="color:var(--secondary); font-size:13px"><i class="far fa-clock"></i> ${x.TANGGAL}</td>
@@ -411,6 +421,7 @@
     function cetak(btn) {
         const nopen = btn.dataset.nopen;
         const rm = btn.dataset.rm;
+        const nama = btn.dataset.nama;
         const racikan = btn.dataset.racikan;
         const no_antrian = btn.dataset.no_antrian;
 
@@ -418,10 +429,35 @@
         console.log('RM:', rm);
 
         window.open(
-            `cetak.php?cetak&nopen=${encodeURIComponent(nopen)}&rm=${encodeURIComponent(rm)}&racikan=${encodeURIComponent(racikan)}&no_antrian=${encodeURIComponent(no_antrian)}`,
+            `cetak.php?cetak&nopen=${encodeURIComponent(nopen)}&rm=${encodeURIComponent(rm)}&racikan=${encodeURIComponent(racikan)}&no_antrian=${encodeURIComponent(no_antrian)}&nama=${encodeURIComponent(nama)}`,
             '_blank'
         );
     }
+
+
+    $('#tabel-antrian tbody').on('click', 'button.cetak', function() {
+        var data = table.row($(this).parents('tr')).data();
+
+        $.ajax({
+            type: 'POST', // mengirim data dengan method POST
+            url: '../nomor-antrian/cetak.php', // url file proses insert data
+            data: {
+                antrian: data["no_antrian"],
+                jenis: data["jenis"],
+                tanggal: data['tanggal'],
+                cetak: 'cetak'
+            },
+            success: function(result) { // ketika proses insert data selesai
+                // jika berhasil
+                var printWindow = window.open('', '_blank');
+                printWindow.document.open();
+                printWindow.document.write(result);
+                printWindow.document.close();
+                printWindow.print();
+            },
+        });
+
+    });
 
     function cetak1(nopen) {
         const url = `../report/cetak_antrian.php?nopen=${encodeURIComponent(nopen)}`;

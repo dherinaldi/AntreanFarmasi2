@@ -5,6 +5,8 @@
 
     if (isset($_REQUEST['cetak'])) {
     $antrian = $_REQUEST['no_antrian'];
+    $rm      = $_REQUEST['rm'];
+    $nama    = $_REQUEST['nama'];
     $jenis   = ($_REQUEST['racikan'] == 0) ? 'NON RACIKAN' : 'RACIKAN';
     $tanggal = (isset($_REQUEST['tanggal']) && $_REQUEST['tanggal'] != '') ? $_REQUEST['tanggal'] : $date;
     }
@@ -30,101 +32,155 @@
 }
 
 @page {
-    sheet-size: 197.3mm 110mm;
+    size: 80mm auto;
+    margin: 0;
 }
+
+@media print {
+
+    html,
+    body {
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sheet {
+        width: 72mm;
+        /* area cetak efektif */
+        margin: auto;
+        text-align: center;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+}
+
 
 p {
     margin: 0pt;
 }
 
-.antrian {
-    text-align: center;
-    background-color: #fff;
-    font-size: 7em;
-    font-family: "Lucida Console";
-    font-weight: bold;
-    margin: 0pt;
+.antrian_head1{
+    font-size:16pt;
+    font-weight:bold;
+    text-align:center;
 }
 
-.antrian_head {
-    text-align: center;
-    background-color: #fff;
-    font-size: 24px;
-    font-family: "Lucida Console";
-    font-weight: bold;
+.antrian_head2{
+    font-size:13pt;
+    font-weight:bold;
+    text-align:center;
+    margin-top:2px;
+    margin-bottom:6px;
 }
 
-.antrian_head1 {
-    text-align: center;
-    background-color: #fff;
-    font-size: 12px;
-    font-family: "roboto";
-    font-weight: bold;
+.antrian{
+    font-size:48pt;
+    font-weight:bold;
+    text-align:center;
+    line-height:1;
+    margin:6px 0;
+    font-family:Arial, sans-serif;
 }
 
-.antrian_foot {
-    text-align: center;
-    background-color: #fff;
-    font-size: 8px;
-    font-family: "roboto";
+.antrian_nama{
+    font-size:11pt;
+    font-weight:bold;
+    text-align:center;
+    text-transform:uppercase;
+    margin-top:5px;
+    word-wrap:break-word;
 }
 
-.antrian_tanggal {
-    text-align: center;
-    background-color: #fff;
-    font-size: 14px;
-    font-family: "roboto";
-    font-weight: bold;
+.antrian_rm{
+    font-size:10pt;
+    text-align:center;
+    margin-top:2px;
 }
 
-@page {
-    size: 58mm 50mm landscape;
-
+.antrian_tanggal{
+    font-size:10pt;
+    text-align:center;
+    margin-top:5px;
 }
 
-body.receipt .sheet {
-    width: 58mm;
-    height: 50mm
-}
-
-@media print {
-    body.receipt {
-        width: 78mm
-    }
-}
-
-@media print {
-    .page-break {
-        display: block;
-        page-break-before: always;
-    }
-}
-
-@media print {
-    body {
-        margin: 0;
-        color: #000;
-        background-color: #fff;
-    }
-
+.antrian_foot{
+    font-size:9pt;
+    text-align:center;
+    margin-top:8px;
 }
 </style>
 
+<script>
+window.onload = function () {
+    window.print();
+}
+</script>
+
 <body>
     <div class="sheet">
-        <p class="antrian_head1"> Antrian Farmasi </p>
-        <p class="antrian_head1"> <?php echo $jenis ?> </p>
-        <p class="antrian"> <?php echo $antrian ?> </p>
-        <p class="antrian_tanggal"> <?php echo $tanggal; ?></p>
-        <p class="antrian_foot">Semoga Lekas Sembuh </p>
+
+    <div class="antrian_head1">
+        ANTRIAN FARMASI
     </div>
+
+    <div class="antrian_head2">
+        <?php echo $jenis; ?>
+    </div>
+
+    <div class="antrian">
+        <?php echo $antrian; ?>
+    </div>
+
+    <div class="antrian_nama">
+        <?php echo $nama; ?>
+    </div>
+
+    <div class="antrian_rm">
+        No. RM : <?php echo $rm; ?>
+    </div>
+
+    <div class="antrian_tanggal">
+        <?php echo $tanggal; ?>
+    </div>
+
+    <div class="antrian_foot">
+        Semoga Lekas Sembuh
+    </div>
+
+</div>
+
     <div class="page-break"></div>
     <div class="sheet">
-        <p class="antrian_head1"> Antrian Farmasi </p>
-        <p class="antrian_head1"> <?php echo $jenis ?> </p>
-        <p class="antrian"> <?php echo $antrian ?> </p>
-        <p class="antrian_tanggal"> <?php echo $tanggal; ?></p>
-        <p class="antrian_foot">Semoga Lekas Sembuh </p>
+
+    <div class="antrian_head1">
+        ANTRIAN FARMASI
+    </div>
+
+    <div class="antrian_head2">
+        <?php echo $jenis; ?>
+    </div>
+
+    <div class="antrian">
+        <?php echo $antrian; ?>
+    </div>
+
+    <div class="antrian_nama">
+        <?php echo $nama; ?>
+    </div>
+
+    <div class="antrian_rm">
+        No. RM : <?php echo $rm; ?>
+    </div>
+
+    <div class="antrian_tanggal">
+        <?php echo $tanggal; ?>
+    </div>
+
+    <div class="antrian_foot">
+        Semoga Lekas Sembuh
     </div>
 </body>
 
