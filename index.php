@@ -253,10 +253,12 @@ ini_set('display_errors', 1);
     </div>
 
     <div class="main-layout">
-        <div class="left-section">
+        <div class="left-section">            
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/TK6qVT2w0W0?autoplay=0&mute=0&loop=0&playlist=TK6qVT2w0W0"
-                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              <!--   auto play , muted dan loop kak -->
+                <video autoplay muted loop playsinline controls style="width:100%; height:100%; object-fit:cover;">
+                    <source src="assets/images/video.mp4" type="video/mp4">
+                </video>
             </div>
             <div id="nama-dipanggil" class="animate__animated animate__fadeIn">
                 <div class="label-panggil">PASIEN DIPANGGIL:</div>
@@ -279,7 +281,7 @@ ini_set('display_errors', 1);
             </div>
             <div class="column">
                 <div class="col-header"><span class="counter" id="jumlah-selesai">000</span><span class="label">Selesai
-                        </span></div>
+                    </span></div>
                 <div class="column-content" id="cont-selesai"></div>
             </div>
         </div>

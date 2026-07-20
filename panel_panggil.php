@@ -303,11 +303,15 @@
 
     <script>
     let asalMap = {}; // Penyimpan memori asal ruangan secara global
-    let selesaiData = belumData= [];
+    let selesaiData = belumData = [];
 
     function loadData() {
-        $.getJSON("get_antrian.php", function(data) {
+        //Set pertanggal kak    
+        const tanggal = new Date().toISOString().split('T')[0];
 
+        $.getJSON("get_antrian.php", {
+            tanggal: tanggal
+        }, function(data) {
             // 1. Update Map (Kamus Asal) agar data asal ruangan tidak hilang saat pindah status
             const gabungan = [...data.belum_diterima, ...data.dilayani, ...data.selesai];
             gabungan.forEach(item => {
@@ -397,7 +401,7 @@
 
             return nopen.includes(keyword) ||
                 nama.includes(keyword) ||
-                norm.includes(keyword) || antrian.includes(keyword) ;
+                norm.includes(keyword) || antrian.includes(keyword);
         });
 
         renderTable("#belum", filtered, false);
@@ -416,7 +420,7 @@
 
             return nopen.includes(keyword) ||
                 nama.includes(keyword) ||
-                norm.includes(keyword) || antrian.includes(keyword) ;
+                norm.includes(keyword) || antrian.includes(keyword);
         });
 
         renderTable("#selesai", filtered, false);
