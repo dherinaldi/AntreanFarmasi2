@@ -263,15 +263,15 @@ ini_set('display_errors', 1);
             <div id="nama-dipanggil" class="animate__animated animate__fadeIn">
                 <div class="label-panggil">PASIEN DIPANGGIL:</div>
                 <div id="antrean-panggilan">-</div>
-                <div id="nama-panggilan">-</div>
+                
+                <!-- <div id="nama-panggilan">-</div> -->
                 <div id="deskPangil">NOMOR RESEP: -</div>
             </div>
         </div>
 
         <div class="antrian-container">
             <div class="column">
-                <div class="col-header"><span class="counter" id="jumlah-belum">000</span><span class="label">Belum
-                        Dilayani</span></div>
+                <div class="col-header"><span class="counter" id="jumlah-belum">000</span><span class="label">Resep Masuk</span></div>
                 <div class="column-content" id="cont-belum"></div>
             </div>
             <div class="column">
@@ -298,12 +298,31 @@ ini_set('display_errors', 1);
         document.getElementById("live-time").textContent = now.toLocaleTimeString("id-ID");
     }
     setInterval(updateClock, 1000);
+    
 
     $('#aktifkan-suara').on('click', function() {
         suaraDiaktifkan = true;
         alert("✅ Suara aktif — sistem siap memanggil antrian.");
         $(this).hide(); // sembunyikan tombol        
     });
+
+    function sensorNama(nama) {
+        if (nama.length <= 2) return nama;
+        const awal = nama.slice(0, 2);
+        const akhir = nama.slice(-1);
+        const tengah = "*".repeat(nama.length - 3);
+        return awal + tengah + akhir;
+    }
+
+    function sensorNamaLengkap(nama) {
+        return nama
+            .split(' ')
+            .map(kata => {
+                if (kata.length <= 1) return kata;
+                return kata[0] + '*'.repeat(kata.length - 1);
+            })
+            .join(' ');
+    }
 
     function loadAntrian() {
         fetch("get_antrian.php")
@@ -353,7 +372,7 @@ ini_set('display_errors', 1);
                         <div class="item status-${key.split('_')[0]}">
                             ${badge}
                             <div class="no-antrian-box">${nomorPoli}</div>
-                            <div class="patient-name">${item.NAMA}</div>
+                            <div class="patient-name">${sensorNamaLengkap(item.NAMA)}</div>
                             <div class="room-origin">${item.ASAL_RUANGAN}</div>
                             <div class="time-info">${item.TANGGAL}</div>
                         </div>`;
@@ -401,7 +420,7 @@ ini_set('display_errors', 1);
             if (hash !== lastHash) {
                 lastHash = hash;
                 let noAntreanPoli = memoryNoAntrian[data.nopen] || "-";
-                document.getElementById("nama-panggilan").innerHTML = data.nama;
+                /* document.getElementById("nama-panggilan").innerHTML = data.nama; */
                 document.getElementById("antrean-panggilan").innerHTML = noAntreanPoli;
                 document.getElementById("deskPangil").innerHTML = "NOMOR RESEP: " + data.nopen;
                 const el = document.getElementById("nama-dipanggil");
@@ -435,7 +454,7 @@ ini_set('display_errors', 1);
 
     function panggilSuara(nama, asal, nomor) {
         let kalimat =
-            `Nomor Antrean , ${ejaNomorAntrean(nomor)} , , Keluarga pasien , ${formatSuara(nama)} , dari , ${formatSuara(asal)} , silakan mengambil obat di loket apotek.`;
+            `Nomor Antrean , ${ejaNomorAntrean(nomor)}  , dari , ${formatSuara(asal)} , silakan mengambil obat di loket apotek.`;
         const u = new SpeechSynthesisUtterance(kalimat);
         u.lang = "id-ID";
         u.rate = 0.8;
