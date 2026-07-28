@@ -225,6 +225,12 @@
         min-width: 90px;
         height: 36px;
     }
+
+   /*  button refresh */
+    .btn-refresh:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
     </style>
 </head>
 
@@ -232,8 +238,9 @@
     <div class="container">
         <div class="header-panel">
             <h2><i class="fas fa-hospital-user"></i> Panel Antrian Farmasi</h2>
-            <button class="btn-refresh" onclick="loadData()">
-                <i class="fas fa-sync-alt"></i> Refresh Data
+            <button id="btnRefresh" class="btn-refresh" onclick="loadData()">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh Data</span>
             </button>
         </div>
 
@@ -306,28 +313,60 @@
     let selesaiData = belumData = [];
 
     function loadData() {
-        //Set pertanggal kak    
+        const btn = $("#btnRefresh");
+
+        // Loading ON
+        btn.prop("disabled", true);
+        btn.find("i")
+            .removeClass("fa-sync-alt")
+            .addClass("fa-spinner fa-spin");
+
+        btn.find("span").text("Loading...");
+
+        // Set tanggal
         const tanggal = new Date().toISOString().split('T')[0];
 
         $.getJSON("get_antrian.php", {
-            tanggal: tanggal
-        }, function(data) {
-            // 1. Update Map (Kamus Asal) agar data asal ruangan tidak hilang saat pindah status
-            const gabungan = [...data.belum_diterima, ...data.dilayani, ...data.selesai];
-            gabungan.forEach(item => {
-                if (item.ASAL_RUANGAN && item.ASAL_RUANGAN !== '-') {
-                    asalMap[item.NOPEN] = item.ASAL_RUANGAN;
-                }
+                tanggal: tanggal
+            })
+            .done(function(data) {
+
+                // Update Map
+                const gabungan = [
+                    ...data.belum_diterima,
+                    ...data.dilayani,
+                    ...data.selesai
+                ];
+
+                gabungan.forEach(item => {
+                    if (item.ASAL_RUANGAN && item.ASAL_RUANGAN !== '-') {
+                        asalMap[item.NOPEN] = item.ASAL_RUANGAN;
+                    }
+                });
+
+                belumData = data.belum_diterima;
+                renderTable("#belum", data.belum_diterima, true);
+
+                renderTable("#dilayani", data.dilayani, false);
+
+                selesaiData = data.selesai;
+                renderTable("#selesai", selesaiData, false);
+
+            })
+            .fail(function() {
+                alert("Gagal mengambil data.");
+            })
+            .always(function() {
+
+                // Loading OFF
+                btn.prop("disabled", false);
+
+                btn.find("i")
+                    .removeClass("fa-spinner fa-spin")
+                    .addClass("fa-sync-alt");
+
+                btn.find("span").text("Refresh Data");
             });
-
-            // 2. Render masing-masing tabel
-            belumData = data.belum_diterima;
-            renderTable("#belum", data.belum_diterima, true); // True berarti tampilkan header jika kosong
-            renderTable("#dilayani", data.dilayani, false);
-
-            selesaiData = data.selesai;
-            renderTable("#selesai", selesaiData, false);
-        });
     }
 
     function renderTable(targetId, list, isMain) {
