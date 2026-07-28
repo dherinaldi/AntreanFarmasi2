@@ -11,6 +11,9 @@ ini_set('display_errors', 1);
     <title>Live Antrian Farmasi - RSUD LAWANG</title>
 
     <script src="assets/js/jquery-3.6.0.min.js"></script>
+
+    <script src="assets/js/responsivevoice.js"></script>
+
     <link rel="stylesheet" href="assets/css/animate.min.css" />
     <link href="assets/css/css2.css" rel="stylesheet">
 
@@ -191,10 +194,10 @@ ini_set('display_errors', 1);
     }
 
     .item .patient-name {
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 15px;
+        font-weight: 300;
         text-transform: uppercase;
-        padding-right: 120px;
+        padding-right: 50px;
     }
 
     .item .room-origin {
@@ -452,14 +455,19 @@ ini_set('display_errors', 1);
         return prefix + " , " + ejaAngka;
     }
 
-    function panggilSuara(nama, asal, nomor) {
+    //suara asli dari speechSynthesis
+    function panggilSuara1(nama, asal, nomor) {
         let kalimat =
-            `Nomor Antrean , ${ejaNomorAntrean(nomor)}  , dari , ${formatSuara(asal)} , silakan mengambil obat di loket apotek.`;
+            `Nomor Antrean , ${ejaNomorAntrean(nomor)}  , dari , ${formatSuara(asal)} , silakan mengambil obat di loket ,apotek.`;
         const u = new SpeechSynthesisUtterance(kalimat);
         u.lang = "id-ID";
         u.rate = 0.8;
         speechSynthesis.cancel();
         speechSynthesis.speak(u);
+    }
+
+    function panggilSuara(nama, asal, nomor) {
+        responsiveVoice.speak(`Nomor Antrean ,${ejaNomorAntrean(nomor)},dari, ${formatSuara(asal)}, silakan mengambil obat di loket , farmasi`, "Indonesian Male");
     }
     </script>
 </body>
