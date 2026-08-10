@@ -231,6 +231,28 @@
         opacity: 0.7;
         cursor: not-allowed;
     }
+
+    /* Status sudah dipanggil (pasien selesai) */
+    tr.row-called {
+        background: #f8fafc;
+        opacity: 0.65;
+    }
+
+    tr.row-called td {
+        color: #94a3b8 !important;
+    }
+
+    .btn-panggil.called {
+        background: #94a3b8 !important;
+        color: #f1f5f9;
+        cursor: pointer;
+        box-shadow: none;
+    }
+
+    .btn-panggil.called:hover {
+        background: #94a3b8 !important;
+        transform: none;
+    }
     </style>
 </head>
 
@@ -312,6 +334,51 @@
     let asalMap = {}; // Penyimpan memori asal ruangan secara global
     let selesaiData = belumData = [];
 
+    // ==== Status "sudah dipanggil" untuk pasien Selesai (disimpan di browser) ====
+    const CALLED_KEY = 'panggilanSelesai';
+
+    function getCalledStore() {
+        const today = new Date().toISOString().split('T')[0];
+        let store = JSON.parse(localStorage.getItem(CALLED_KEY) || 'null');
+
+        // Reset otomatis kalau ganti hari
+        if (!store || store.tanggal !== today) {
+            store = {
+                tanggal: today,
+                data: {}
+            };
+            localStorage.setItem(CALLED_KEY, JSON.stringify(store));
+        }
+        return store;
+    }
+
+    function isPatientCalled(nopen) {
+        return !!getCalledStore().data[nopen];
+    }
+
+    function markPatientCalled(nopen) {
+        const store = getCalledStore();
+        store.data[nopen] = true;
+        localStorage.setItem(CALLED_KEY, JSON.stringify(store));
+    }
+
+    // ==== Escape data pasien supaya aman disisipkan ke atribut onclick / HTML ====
+    // Mencegah error saat nama pasien mengandung tanda kutip, misal: MAS'UDA
+    function escJs(str) {
+        return String(str ?? '')
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'")
+            .replace(/"/g, '&quot;');
+    }
+
+    function escHtml(str) {
+        return String(str ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     function loadData() {
         const btn = $("#btnRefresh");
 
@@ -384,23 +451,36 @@
 
                 if (targetId === '#belum') {
                     actionButton = `
-                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}" data-nama="${x.NAMA}"  onclick="cetak(this)">
+                    <button class="btn-cetak" data-nopen="${escHtml(x.NOPEN)}" data-no_antrian="${escHtml(x.NO_ANTRIAN)}" data-racikan="${escHtml(x.RACIKAN)}"  data-rm="${escHtml(x.NORM)}" data-nama="${escHtml(x.NAMA)}"  onclick="cetak(this)">
                         <i class="fas fa-print"></i> Cetak
                     </button>
                 `;
                 } else {
+                    // Cek status sudah dipanggil khusus untuk panel Selesai
+                    let calledClass = '';
+                    let calledIcon = 'fa-volume-up';
+                    let calledLabel = 'Panggil';
+
+                    if (targetId === '#selesai' && isPatientCalled(x.NOPEN)) {
+                        calledClass = 'called';
+                        calledIcon = 'fa-check';
+                        calledLabel = 'Terpanggil';
+                    }
+
                     actionButton = `
-                    <button class="btn-cetak" data-nopen="${x.NOPEN}" data-no_antrian="${x.NO_ANTRIAN}" data-racikan="${x.RACIKAN}"  data-rm="${x.NORM}" data-nama="${x.NAMA}"  onclick="cetak(this)">
+                    <button class="btn-cetak" data-nopen="${escHtml(x.NOPEN)}" data-no_antrian="${escHtml(x.NO_ANTRIAN)}" data-racikan="${escHtml(x.RACIKAN)}"  data-rm="${escHtml(x.NORM)}" data-nama="${escHtml(x.NAMA)}"  onclick="cetak(this)">
                         <i class="fas fa-print"></i> Cetak
                     </button>
-                    <button class="btn-panggil" onclick="panggil('${x.NOPEN}', '${x.NAMA.replace(/'/g, "\\'")}', this)">
-                        <i class="fas fa-volume-up"></i> Panggil
+                    <button class="btn-panggil ${calledClass}" onclick="panggil('${escJs(x.NOPEN)}', '${escJs(x.NAMA)}', this)">
+                        <i class="fas ${calledIcon}"></i> ${calledLabel}
                     </button>
                 `;
                 }
 
+                let rowClass = (targetId === '#selesai' && isPatientCalled(x.NOPEN)) ? 'row-called' : '';
+
                 html += `
-                <tr>
+                <tr class="${rowClass}">
                     <td><span style="font-weight:700; color:#cbd5e1">${i+1}</span></td>
                     <td><code style="font-weight:700; color:var(--primary); background:#eff6ff; padding:4px 8px; border-radius:5px">${x.NOPEN}</code></td>
                     <td width="10%"><code style="font-weight:700; color:var(--primary); background:#eff6ff; padding:4px 8px; border-radius:5px">${x.NO_ANTRIAN} </code></td>
@@ -413,7 +493,7 @@
     ">
         ${x.RACIKAN == 0 ? 'NR' : 'R'}
     </code></td>
-                    <td><div style="font-weight:700; font-size:15px">(${x.NORM}) ${x.NAMA}</div></td>
+                    <td><div style="font-weight:700; font-size:15px">(${escHtml(x.NORM)}) ${escHtml(x.NAMA)}</div></td>
                     <td><span class="badge-ruangan"><i class="fas fa-door-open"></i> ${asalFix}</span></td>
                     <td style="color:var(--secondary); font-size:13px"><i class="far fa-clock"></i> ${x.TANGGAL}</td>
                     <td style="text-align: center">
@@ -469,7 +549,7 @@
     loadData();
     //setInterval(loadData, 5000); // Auto refresh setiap 5 detik
 
-    function panggil(nopen, nama) {
+    function panggil(nopen, nama, btn) {
         $.ajax({
             url: "panggil_pasien.php",
             method: "POST",
@@ -482,6 +562,20 @@
             success: function(res) {
                 if (res.status === "ok") {
                     console.log("Memanggil: " + nopen);
+
+                    // Kalau tombol berasal dari panel "Selesai", ubah jadi abu-abu & simpan statusnya
+                    if (btn) {
+                        const $btn = $(btn);
+                        const $tbody = $btn.closest('tbody');
+
+                        if ($tbody.attr('id') === 'selesai') {
+                            markPatientCalled(nopen);
+
+                            $btn.closest('tr').addClass('row-called');
+                            $btn.addClass('called')
+                                .html('<i class="fas fa-check"></i> Terpanggil');
+                        }
+                    }
                 } else {
                     alert("Gagal memanggil: " + (res.msg ?? 'Error tidak diketahui'));
                 }
@@ -501,7 +595,6 @@
 
         console.log('NOPEN:', nopen);
         console.log('RM:', rm);
-        console.log('NAMA:', nama);
 
         window.open(
             `cetak.php?cetak&nopen=${encodeURIComponent(nopen)}&rm=${encodeURIComponent(rm)}&racikan=${encodeURIComponent(racikan)}&no_antrian=${encodeURIComponent(no_antrian)}&nama=${encodeURIComponent(nama)}`,

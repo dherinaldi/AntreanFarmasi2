@@ -501,7 +501,6 @@
 
         console.log('NOPEN:', nopen);
         console.log('RM:', rm);
-        console.log('NAMA:', nama);
 
         window.open(
             `cetak.php?cetak&nopen=${encodeURIComponent(nopen)}&rm=${encodeURIComponent(rm)}&racikan=${encodeURIComponent(racikan)}&no_antrian=${encodeURIComponent(no_antrian)}&nama=${encodeURIComponent(nama)}`,

@@ -2,13 +2,31 @@
     date_default_timezone_set('Asia/Jakarta');
     $date    = date('Y-m-d');
     $tanggal = '';
+    $antrian = '';
+    $rm      = '';
+    $nama    = '';
+    $jenis   = '';
 
-    if (isset($_REQUEST['cetak'])) {
-    $antrian = $_REQUEST['no_antrian'];
-    $rm      = $_REQUEST['rm'];
-    $nama    = $_REQUEST['nama'];
-    $jenis   = ($_REQUEST['racikan'] == 0) ? 'NON RACIKAN' : 'RACIKAN';
-    $tanggal = (isset($_REQUEST['tanggal']) && $_REQUEST['tanggal'] != '') ? $_REQUEST['tanggal'] : $date;
+    // Helper: bersihkan & amankan teks sebelum ditampilkan ke HTML
+    function bersihkan_teks($str)
+    {
+    if ($str === null) {
+        return '';
+    }
+
+    // Perbaiki kalau string bukan UTF-8 valid (mis. karakter kutip aneh dari encoding lama)
+    if (! mb_check_encoding($str, 'UTF-8')) {
+        $str = mb_convert_encoding($str, 'UTF-8', 'Windows-1252');
+    }
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    }
+
+     if (isset($_REQUEST['cetak'])) {
+        $antrian = bersihkan_teks($_REQUEST['no_antrian'] ?? '');
+        $rm      = bersihkan_teks($_REQUEST['rm'] ?? '');
+        $nama    = bersihkan_teks($_REQUEST['nama'] ?? '');
+        $jenis   = ($_REQUEST['racikan'] == 0) ? 'NON RACIKAN' : 'RACIKAN';
+        $tanggal = (isset($_REQUEST['tanggal']) && $_REQUEST['tanggal'] != '') ? bersihkan_teks($_REQUEST['tanggal']) : $date;
     }
 ?>
 <html>
@@ -62,59 +80,59 @@ p {
     margin: 0pt;
 }
 
-.antrian_head1{
-    font-size:16pt;
-    font-weight:bold;
-    text-align:center;
+.antrian_head1 {
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: center;
 }
 
-.antrian_head2{
-    font-size:13pt;
-    font-weight:bold;
-    text-align:center;
-    margin-top:2px;
-    margin-bottom:6px;
+.antrian_head2 {
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 6px;
 }
 
-.antrian{
-    font-size:48pt;
-    font-weight:bold;
-    text-align:center;
-    line-height:1;
-    margin:6px 0;
-    font-family:Arial, sans-serif;
+.antrian {
+    font-size: 48pt;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+    margin: 6px 0;
+    font-family: Arial, sans-serif;
 }
 
-.antrian_nama{
-    font-size:11pt;
-    font-weight:bold;
-    text-align:center;
-    text-transform:uppercase;
-    margin-top:5px;
-    word-wrap:break-word;
+.antrian_nama {
+    font-size: 11pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-top: 5px;
+    word-wrap: break-word;
 }
 
-.antrian_rm{
-    font-size:10pt;
-    text-align:center;
-    margin-top:2px;
+.antrian_rm {
+    font-size: 10pt;
+    text-align: center;
+    margin-top: 2px;
 }
 
-.antrian_tanggal{
-    font-size:10pt;
-    text-align:center;
-    margin-top:5px;
+.antrian_tanggal {
+    font-size: 10pt;
+    text-align: center;
+    margin-top: 5px;
 }
 
-.antrian_foot{
-    font-size:9pt;
-    text-align:center;
-    margin-top:8px;
+.antrian_foot {
+    font-size: 9pt;
+    text-align: center;
+    margin-top: 8px;
 }
 </style>
 
 <script>
-window.onload = function () {
+window.onload = function() {
     window.print();
 }
 </script>
@@ -122,66 +140,66 @@ window.onload = function () {
 <body>
     <div class="sheet">
 
-    <div class="antrian_head1">
-        ANTRIAN FARMASI
-    </div>
+        <div class="antrian_head1">
+            ANTRIAN FARMASI
+        </div>
 
-    <div class="antrian_head2">
-        <?php echo $jenis; ?>
-    </div>
+        <div class="antrian_head2">
+            <?php echo $jenis; ?>
+        </div>
 
-    <div class="antrian">
-        <?php echo $antrian; ?>
-    </div>
+        <div class="antrian">
+            <?php echo $antrian; ?>
+        </div>
 
-    <div class="antrian_nama">
-        <?php echo $nama; ?>
-    </div>
+        <div class="antrian_nama">
+            <?php echo $nama; ?>
+        </div>
 
-    <div class="antrian_rm">
-        No. RM : <?php echo $rm; ?>
-    </div>
+        <div class="antrian_rm">
+            No. RM : <?php echo $rm; ?>
+        </div>
 
-    <div class="antrian_tanggal">
-        <?php echo $tanggal; ?>
-    </div>
+        <div class="antrian_tanggal">
+            <?php echo $tanggal; ?>
+        </div>
 
-    <div class="antrian_foot">
-        Semoga Lekas Sembuh
-    </div>
+        <div class="antrian_foot">
+            Semoga Lekas Sembuh
+        </div>
 
-</div>
+    </div>
 
     <div class="page-break"></div>
     <div class="sheet">
 
-    <div class="antrian_head1">
-        ANTRIAN FARMASI
-    </div>
+        <div class="antrian_head1">
+            ANTRIAN FARMASI
+        </div>
 
-    <div class="antrian_head2">
-        <?php echo $jenis; ?>
-    </div>
+        <div class="antrian_head2">
+            <?php echo $jenis; ?>
+        </div>
 
-    <div class="antrian">
-        <?php echo $antrian; ?>
-    </div>
+        <div class="antrian">
+            <?php echo $antrian; ?>
+        </div>
 
-    <div class="antrian_nama">
-        <?php echo $nama; ?>
-    </div>
+        <div class="antrian_nama">
+            <?php echo $nama; ?>
+        </div>
 
-    <div class="antrian_rm">
-        No. RM : <?php echo $rm; ?>
-    </div>
+        <div class="antrian_rm">
+            No. RM : <?php echo $rm; ?>
+        </div>
 
-    <div class="antrian_tanggal">
-        <?php echo $tanggal; ?>
-    </div>
+        <div class="antrian_tanggal">
+            <?php echo $tanggal; ?>
+        </div>
 
-    <div class="antrian_foot">
-        Semoga Lekas Sembuh
-    </div>
+        <div class="antrian_foot">
+            Semoga Lekas Sembuh
+        </div>
 </body>
 
 </html>
