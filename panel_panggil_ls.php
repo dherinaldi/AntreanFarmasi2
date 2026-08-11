@@ -59,7 +59,7 @@
         background: var(--primary);
         color: white;
         border: none;
-        padding: 12px 20px;
+        padding: 9px 14px;
         border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
@@ -226,7 +226,7 @@
         height: 36px;
     }
 
-   /*  button refresh */
+    /*  button refresh */
     .btn-refresh:disabled {
         opacity: 0.7;
         cursor: not-allowed;
@@ -253,6 +253,30 @@
         background: #94a3b8 !important;
         transform: none;
     }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    .btn-reset {
+        background: transparent;
+        color: var(--secondary);
+        border: 2px solid #e2e8f0;
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .btn-reset:hover {
+        border-color: #cbd5e1;
+        color: var(--text-main);
+    }
     </style>
 </head>
 
@@ -260,10 +284,15 @@
     <div class="container">
         <div class="header-panel">
             <h2><i class="fas fa-hospital-user"></i> Panel Antrian Farmasi</h2>
-            <button id="btnRefresh" class="btn-refresh" onclick="loadData()">
-                <i class="fas fa-sync-alt"></i>
-                <span>Refresh Data</span>
-            </button>
+            <div class="filter-group">
+                <button class="btn-reset" onclick="resetRiwayat()" title="Kosongkan penanda hari ini">
+                    <i class="fas fa-eraser"></i> Reset penanda
+                </button>
+                <button id="btnRefresh" class="btn-refresh" onclick="loadData()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Data</span>
+                </button>
+            </div>
         </div>
 
         <div class="section-header">
@@ -361,6 +390,19 @@
         store.data[nopen] = true;
         localStorage.setItem(CALLED_KEY, JSON.stringify(store));
     }
+
+    function resetRiwayat() {
+        if (!confirm("Kosongkan penanda panggilan hari ini?")) return;
+        const today = new Date().toISOString().split('T')[0];
+
+        localStorage.setItem(CALLED_KEY, JSON.stringify({
+            tanggal: today,
+            data: {}
+        }));
+
+        loadData();
+    }
+
 
     // ==== Escape data pasien supaya aman disisipkan ke atribut onclick / HTML ====
     // Mencegah error saat nama pasien mengandung tanda kutip, misal: MAS'UDA

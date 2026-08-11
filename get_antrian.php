@@ -92,6 +92,7 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
             (SELECT CONCAT(res.POLI_BPJS, '-', LPAD(res.ANTRIAN_POLI, 3, '0'))
              FROM regonline.reservasi res
              WHERE res.NORM = p.NORM
+             AND res.`STATUS` in (2)
              AND DATE(res.TANGGALKUNJUNGAN) = CURDATE()
              ORDER BY res.ID ASC LIMIT 1) AS NO_ANTRIAN
         FROM pendaftaran.kunjungan k
@@ -106,7 +107,7 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
 
     #echo $sql;
 
-    #die();
+    //die();
 
     $result = $koneksi->query($sql);
     $data   = [];
