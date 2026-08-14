@@ -256,9 +256,9 @@ ini_set('display_errors', 1);
     </div>
 
     <div class="main-layout">
-        <div class="left-section">
+        <div class="left-section">            
             <div class="video-container">
-                <!--   auto play , muted dan loop kak -->
+              <!--   auto play , muted dan loop kak -->
                 <video autoplay muted loop playsinline controls style="width:100%; height:100%; object-fit:cover;">
                     <source src="assets/images/video.mp4" type="video/mp4">
                 </video>
@@ -266,7 +266,7 @@ ini_set('display_errors', 1);
             <div id="nama-dipanggil" class="animate__animated animate__fadeIn">
                 <div class="label-panggil">PASIEN DIPANGGIL:</div>
                 <div id="antrean-panggilan">-</div>
-
+                
                 <!-- <div id="nama-panggilan">-</div> -->
                 <div id="deskPangil">NOMOR RESEP: -</div>
             </div>
@@ -274,8 +274,7 @@ ini_set('display_errors', 1);
 
         <div class="antrian-container">
             <div class="column">
-                <div class="col-header"><span class="counter" id="jumlah-belum">000</span><span class="label">Resep
-                        Masuk</span></div>
+                <div class="col-header"><span class="counter" id="jumlah-belum">000</span><span class="label">Resep Masuk</span></div>
                 <div class="column-content" id="cont-belum"></div>
             </div>
             <div class="column">
@@ -302,7 +301,7 @@ ini_set('display_errors', 1);
         document.getElementById("live-time").textContent = now.toLocaleTimeString("id-ID");
     }
     setInterval(updateClock, 1000);
-
+    
 
     $('#aktifkan-suara').on('click', function() {
         suaraDiaktifkan = true;
@@ -455,17 +454,6 @@ ini_set('display_errors', 1);
         let angka = parts[1] || "";
         let ejaAngka = angka.split('').join(' , ').replace(/0/g, "nol");
         return prefix + " , " + ejaAngka;
-    }
-
-    //suara asli dari speechSynthesis
-    function panggilSuara1(nama, asal, nomor) {
-        let kalimat =
-            `Nomor Antrean , ${ejaNomorAntrean(nomor)}  , dari , ${formatSuara(asal)} , silakan mengambil obat di loket ,apotek.`;
-        const u = new SpeechSynthesisUtterance(kalimat);
-        u.lang = "id-ID";
-        u.rate = 0.8;
-        speechSynthesis.cancel();
-        speechSynthesis.speak(u);
     }
 
     //suara asli dari speechSynthesis

@@ -92,7 +92,7 @@
                             <div class="feature-icon-1 bg-success bg-gradient mb-4">
                                 <i class="bi-mic"></i>
                             </div>
-                            <h3>Panggilan Antrian 2</h3>
+                            <h3>Panggilan Antrian 2 (LS)</h3>
                             <p class="mb-4">Halaman Panggilan Antrian digunakan petugas loket untuk memanggil antrian
                                 pengunjung.</p>
                             <a href="panel_panggil_ls.php" class="btn btn-success rounded-pill px-4 py-2" target="_blank">

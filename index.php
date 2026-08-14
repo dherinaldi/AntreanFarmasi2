@@ -1,477 +1,129 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-?>
-<!DOCTYPE html>
-<html lang="id">
+<!-- Aplikasi Antrian Berbasis Web 
+**********************************************
+* Developer   : Indra Styawantoro
+* Company     : Indra Studio
+* Release     : Juni 2021
+* Update      : -
+* Website     : www.indrasatya.com
+* E-mail      : indra.setyawantoro@gmail.com
+* WhatsApp    : +62-821-8686-9898
+-->
+
+<!doctype html>
+<html lang="en" class="h-100">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Live Antrian Farmasi - RSUD LAWANG</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Aplikasi Antrian Berbasis Web">
+    <meta name="author" content="Indra Styawantoro">
 
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
+    <!-- Title -->
+    <title>Aplikasi Antrian Berbasis Web</title>
 
-    <script src="assets/js/responsivevoice.js"></script>
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
 
-    <link rel="stylesheet" href="assets/css/animate.min.css" />
-    <link href="assets/css/css2.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
-    <style>
-    :root {
-        --bg-dark: #064e40;
-        --primary-green: #0a5d4e;
-        --accent-yellow: #facc15;
-        --card-bg: #ffffff;
-        --text-main: #1e293b;
-    }
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 
-    * {
-        box-sizing: border-box;
-    }
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,500,600,700,800,900&amp;display=swap"
+        rel="stylesheet">
 
-    body {
-        background: radial-gradient(circle, #0a5d4e 0%, #063d33 100%);
-        color: var(--text-main);
-        font-family: 'Inter', sans-serif;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-    }
-
-    #header-top {
-        background: var(--bg-dark);
-        color: white;
-        padding: 15px 30px;
-        font-size: 22px;
-        font-weight: 800;
-        border-bottom: 5px solid var(--accent-yellow);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .main-layout {
-        display: flex;
-        height: calc(100vh - 65px);
-        padding: 20px;
-        gap: 20px;
-    }
-
-    .left-section {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .video-container {
-        flex: 1;
-        background: black;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        position: relative;
-    }
-
-    .video-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    #nama-dipanggil {
-        background: linear-gradient(135deg, #0a5d4e 0%, #064e40 100%);
-        border-radius: 20px;
-        text-align: center;
-        padding: 20px;
-        color: white;
-        border-top: 6px solid var(--accent-yellow);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    #antrean-panggilan {
-        font-size: 90px;
-        font-weight: 900;
-        color: var(--accent-yellow);
-        line-height: 1;
-        margin: 10px 0;
-    }
-
-    #nama-panggilan {
-        font-size: 38px;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
-
-    .antrian-container {
-        flex: 2;
-        display: flex;
-        gap: 20px;
-    }
-
-    .column {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 25px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .col-header {
-        text-align: center;
-        padding: 15px;
-        background: var(--primary-green);
-        color: white;
-    }
-
-    .col-header .counter {
-        font-size: 60px;
-        font-weight: 800;
-        display: block;
-        color: var(--accent-yellow);
-        line-height: 1;
-    }
-
-    .column-content {
-        flex: 1;
-        position: relative;
-        overflow: hidden;
-        padding: 15px;
-    }
-
-    /* LOGIKA SCROLLING SEAMLESS */
-    .scroll-wrapper {
-        position: absolute;
-        width: calc(100% - 30px);
-        display: flex;
-        flex-direction: column;
-        animation: moveUp linear infinite;
-    }
-
-    @keyframes moveUp {
-        0% {
-            transform: translateY(0);
-        }
-
-        100% {
-            transform: translateY(-50%);
-        }
-
-        /* Naik tepat setengah dari total tinggi wrapper */
-    }
-
-    .item {
-        background: white;
-        margin-bottom: 15px;
-        padding: 15px;
-        border-radius: 15px;
-        border-left: 10px solid #cbd5e1;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        position: relative;
-        min-height: 110px;
-    }
-
-    .status-belum {
-        border-left-color: #f59e0b;
-    }
-
-    .status-dilayani {
-        border-left-color: var(--primary-green);
-    }
-
-    .status-selesai {
-        border-left-color: #22c55e;
-        background: #f0fdf4;
-    }
-
-    .item .patient-name {
-        font-size: 15px;
-        font-weight: 300;
-        text-transform: uppercase;
-        padding-right: 50px;
-    }
-
-    .item .room-origin {
-        font-size: 14px;
-        color: #64748b;
-        font-weight: 600;
-    }
-
-    .item .time-info {
-        font-size: 12px;
-        color: #94a3b8;
-    }
-
-    .no-antrian-box {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: var(--accent-yellow);
-        color: #000;
-        font-size: 22px;
-        font-weight: 900;
-        padding: 5px 15px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border: 3px solid #ca8a04;
-    }
-
-    .badge {
-        font-size: 11px;
-        font-weight: 800;
-        padding: 4px 10px;
-        border-radius: 6px;
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-
-    .badge-r {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-    .badge-nr {
-        background: #dcfce7;
-        color: #16a34a;
-    }
-    </style>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
-<body>
-
-    <div id="header-top">
-        <span>ANTRIAN FARMASI RSUD LAWANG</span>
-        <button id="aktifkan-suara" class="btn btn-sm btn-primary">Aktifkan
-            Suara</button>
-        <span id="live-time">00:00:00</span>
-    </div>
-
-    <div class="main-layout">
-        <div class="left-section">            
-            <div class="video-container">
-              <!--   auto play , muted dan loop kak -->
-                <video autoplay muted loop playsinline controls style="width:100%; height:100%; object-fit:cover;">
-                    <source src="assets/images/video.mp4" type="video/mp4">
-                </video>
+<body class="d-flex flex-column h-100">
+    <main class="flex-shrink-0">
+        <div class="container pt-5">
+            <!-- tampilkan pesan selamat datang -->
+            <div class="alert alert-light d-flex align-items-center mb-5" role="alert">
+                <i class="bi-info-circle text-success me-3 fs-3"></i>
+                <div>
+                    Selamat Datang di <strong>Aplikasi Antrian Farmasi RSUD Lawang</strong>. Silahkan pilih halaman yang ingin
+                    ditampilkan.
+                </div>
             </div>
-            <div id="nama-dipanggil" class="animate__animated animate__fadeIn">
-                <div class="label-panggil">PASIEN DIPANGGIL:</div>
-                <div id="antrean-panggilan">-</div>
-                
-                <!-- <div id="nama-panggilan">-</div> -->
-                <div id="deskPangil">NOMOR RESEP: -</div>
+
+            <div class="row gx-5">
+                <!-- link halaman display panggilan pasien -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="feature-icon-1 bg-success bg-gradient mb-4">
+                                <i class="bi-people"></i>
+                            </div>
+                            <h3>Display Panggilan Pasien</h3>
+                            <p class="mb-4">Halaman untuk menampilkan display Antrian Layanan Farmasi </p>
+                            <a href="display_farmasi.php" class="btn btn-success rounded-pill px-4 py-2" target="_blank">
+                                Tampilkan <i class="bi-chevron-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- link halaman panggilan antrian -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="feature-icon-1 bg-success bg-gradient mb-4">
+                                <i class="bi-mic"></i>
+                            </div>
+                            <h3>Panggilan Antrian</h3>
+                            <p class="mb-4">Halaman Panggilan Antrian digunakan petugas loket untuk memanggil antrian
+                                pengunjung.</p>
+                            <a href="panel_panggil.php" class="btn btn-success rounded-pill px-4 py-2" target="_blank">
+                                Tampilkan <i class="bi-chevron-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="feature-icon-1 bg-success bg-gradient mb-4">
+                                <i class="bi-mic"></i>
+                            </div>
+                            <h3>Panggilan Antrian 2 (LS)</h3>
+                            <p class="mb-4">Halaman Panggilan Antrian digunakan petugas loket untuk memanggil antrian
+                                pengunjung.</p>
+                            <a href="panel_panggil_ls.php" class="btn btn-success rounded-pill px-4 py-2" target="_blank">
+                                Tampilkan <i class="bi-chevron-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
+    </main>
 
-        <div class="antrian-container">
-            <div class="column">
-                <div class="col-header"><span class="counter" id="jumlah-belum">000</span><span class="label">Resep Masuk</span></div>
-                <div class="column-content" id="cont-belum"></div>
-            </div>
-            <div class="column">
-                <div class="col-header"><span class="counter" id="jumlah-dilayani">000</span><span class="label">Sedang
-                        Dilayani</span></div>
-                <div class="column-content" id="cont-dilayani"></div>
-            </div>
-            <div class="column">
-                <div class="col-header"><span class="counter" id="jumlah-selesai">000</span><span class="label">Selesai
-                    </span></div>
-                <div class="column-content" id="cont-selesai"></div>
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4">
+        <div class="container-fluid">
+            <!-- copyright -->
+            <div class="copyright text-center mb-2 mb-md-0">
+                &copy; 2021 - <a href="#" target="_blank" class="text-danger text-decoration-none">Dhe Rinaldi SIRS RSUD
+                    Lawang</a>. All rights reserved.
             </div>
         </div>
-    </div>
+    </footer>
 
-    <script>
-    let memoryAsal = {};
-    let memoryNoAntrian = {};
-    let lastDataJSON = ""; // Untuk menyimpan sidik jari data terakhir
-    let suaraDiaktifkan = false;
-
-    function updateClock() {
-        const now = new Date();
-        document.getElementById("live-time").textContent = now.toLocaleTimeString("id-ID");
-    }
-    setInterval(updateClock, 1000);
-    
-
-    $('#aktifkan-suara').on('click', function() {
-        suaraDiaktifkan = true;
-        alert("✅ Suara aktif — sistem siap memanggil antrian.");
-        $(this).hide(); // sembunyikan tombol        
-    });
-
-    function sensorNama(nama) {
-        if (nama.length <= 2) return nama;
-        const awal = nama.slice(0, 2);
-        const akhir = nama.slice(-1);
-        const tengah = "*".repeat(nama.length - 3);
-        return awal + tengah + akhir;
-    }
-
-    function sensorNamaLengkap(nama) {
-        return nama
-            .split(' ')
-            .map(kata => {
-                if (kata.length <= 1) return kata;
-                return kata[0] + '*'.repeat(kata.length - 1);
-            })
-            .join(' ');
-    }
-
-    function loadAntrian() {
-        fetch("get_antrian.php")
-            .then(res => res.json())
-            .then(data => {
-                // --- LOGIKA ANTI-RESET SCROLL ---
-                // Kita bandingkan data baru dengan data lama dalam bentuk string
-                let currentDataJSON = JSON.stringify(data);
-                if (currentDataJSON === lastDataJSON) {
-                    // Jika data identik, jangan lakukan apa-apa. 
-                    // Biarkan animasi scroll yang sedang jalan tetap lanjut.
-                    return;
-                }
-                // Simpan data terbaru untuk perbandingan berikutnya
-                lastDataJSON = currentDataJSON;
-
-                const categories = {
-                    "belum_diterima": "#cont-belum",
-                    "dilayani": "#cont-dilayani",
-                    "selesai": "#cont-selesai"
-                };
-
-                Object.keys(categories).forEach(key => {
-                    const container = document.querySelector(categories[key]);
-                    let itemsHtml = "";
-                    let filteredList = [];
-
-                    if (data[key]) {
-                        filteredList = data[key].filter(item => {
-                            let asal = (item.ASAL_RUANGAN || "").toUpperCase();
-                            return !asal.includes("UNIT TERKAIT") && !asal.includes("PERAWATAN") &&
-                                !asal.includes("INAP");
-                        });
-                    }
-
-                    if (filteredList.length > 0) {
-                        filteredList.forEach(item => {
-                            memoryAsal[item.NOPEN] = item.ASAL_RUANGAN;
-                            memoryNoAntrian[item.NOPEN] = item.NO_ANTRIAN;
-
-                            let badge = item.RACIKAN == "1" ?
-                                '<span class="badge badge-r">RACIKAN</span>' :
-                                '<span class="badge badge-nr">NON RACIK</span>';
-                            let nomorPoli = item.NO_ANTRIAN || "-";
-
-                            itemsHtml += `
-                        <div class="item status-${key.split('_')[0]}">
-                            ${badge}
-                            <div class="no-antrian-box">${nomorPoli}</div>
-                            <div class="patient-name">${sensorNamaLengkap(item.NAMA)}</div>
-                            <div class="room-origin">${item.ASAL_RUANGAN}</div>
-                            <div class="time-info">${item.TANGGAL}</div>
-                        </div>`;
-                        });
-
-                        if (filteredList.length > 4) {
-                            let speed = filteredList.length * 4; // Sedikit dilambatkan biar enak dibaca
-                            container.innerHTML = `<div class="scroll-wrapper" style="animation-duration: ${speed}s">
-                        ${itemsHtml} ${itemsHtml}
-                    </div>`;
-                        } else {
-                            container.innerHTML = itemsHtml;
-                        }
-                    } else {
-                        container.innerHTML =
-                            `<div style="text-align:center; padding:20px; color:#94a3b8;">Tidak ada antrian</div>`;
-                    }
-                });
-
-                document.getElementById("jumlah-belum").textContent = String(data.total.belum_diterima).padStart(3,
-                    '0');
-                document.getElementById("jumlah-dilayani").textContent = String(data.total.dilayani).padStart(3,
-                    '0');
-                document.getElementById("jumlah-selesai").textContent = String(data.total.selesai).padStart(3, '0');
-            });
-    }
-
-    // Refresh data setiap 5 detik (lebih cepat gapapa karena sudah ada proteksi return di atas)
-    setInterval(loadAntrian, 5000);
-    loadAntrian();
-
-    // --- LOGIKA CEK PANGGILAN (Tetap sama) ---
-    let lastHash = "";
-
-    function cekPanggilan() {
-        fetch("last_panggilan.txt?rnd=" + Math.random()).then(res => res.text()).then(txt => {
-            if (!txt.trim()) return;
-            let data;
-            try {
-                data = JSON.parse(txt);
-            } catch (e) {
-                return;
-            }
-            const hash = data.nopen + data.waktu;
-            if (hash !== lastHash) {
-                lastHash = hash;
-                let noAntreanPoli = memoryNoAntrian[data.nopen] || "-";
-                /* document.getElementById("nama-panggilan").innerHTML = data.nama; */
-                document.getElementById("antrean-panggilan").innerHTML = noAntreanPoli;
-                document.getElementById("deskPangil").innerHTML = "NOMOR RESEP: " + data.nopen;
-                const el = document.getElementById("nama-dipanggil");
-                el.classList.remove("animate__fadeIn");
-                void el.offsetWidth;
-                el.classList.add("animate__fadeIn");
-
-                // Panggil Suara
-                panggilSuara(data.nama, memoryAsal[data.nopen], noAntreanPoli);
-            }
-        });
-    }
-    setInterval(cekPanggilan, 3000);
-
-    //ubah suara untuk Poli THT menjadi Te Ha Te
-    function formatSuara(teks) {
-        if (!teks) return "";
-        let hasil = teks.toUpperCase();
-        hasil = hasil.replace(/\bUGD\b/g, "Unit Gawat Darurat").replace(/\bIGD\b/g, "Instalasi Gawat Darurat").replace(
-            /\bPOLI\b/g, "Poli").replace(/\bTHT\b/g, "Te Ha Te");;
-        return hasil.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
-    }
-
-    function ejaNomorAntrean(nomor) {
-        if (!nomor || nomor === "-") return "";
-        let parts = nomor.split('-');
-        let prefix = parts[0].split('').join(' , ').replace("1", "satu").replace("2", "dua");
-        let angka = parts[1] || "";
-        let ejaAngka = angka.split('').join(' , ').replace(/0/g, "nol");
-        return prefix + " , " + ejaAngka;
-    }
-
-    //suara asli dari speechSynthesis
-    function panggilSuara1(nama, asal, nomor) {
-        let kalimat =
-            `Nomor Antrean , ${ejaNomorAntrean(nomor)}  , dari , ${formatSuara(asal)} , silakan mengambil obat di loket ,apotek.`;
-        const u = new SpeechSynthesisUtterance(kalimat);
-        u.lang = "id-ID";
-        u.rate = 0.8;
-        speechSynthesis.cancel();
-        speechSynthesis.speak(u);
-    }
-
-    function panggilSuara(nama, asal, nomor) {
-       responsiveVoice.speak(`Nomor Antrean ,${ejaNomorAntrean(nomor)},dari, ${formatSuara(asal)}, silakan mengambil obat di loket , farmasi`, "Indonesian Male");
-        console.log(asal);
-        console.log(formatSuara(asal));
-    }
+    <!-- Popper and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+        integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous">
     </script>
 </body>
 
