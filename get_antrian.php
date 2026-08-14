@@ -42,19 +42,20 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
              AND r2.DESKRIPSI NOT LIKE '%Laboratorium%'
              AND r2.DESKRIPSI NOT LIKE '%Radiologi%'
              AND (r2.DESKRIPSI LIKE '%Poli%' OR r2.DESKRIPSI LIKE '%REHAB%' OR r2.DESKRIPSI LIKE '%IGD%' OR r2.DESKRIPSI LIKE '%HEMO%')
-             ORDER BY k2.MASUK DESC LIMIT 1) AS ASAL_RUANGAN,
+             ORDER BY k2.MASUK ASC LIMIT 1) AS ASAL_RUANGAN,
             MAX(CASE WHEN odr.RACIKAN = 1 THEN 1 ELSE 0 END) AS RACIKAN,
             -- CARI NOMOR ANTREAN BERDASARKAN NORM
             (SELECT CONCAT(res.POLI_BPJS, '-', LPAD(res.ANTRIAN_POLI, 3, '0'))
              FROM regonline.reservasi res
              WHERE res.NORM = p.NORM
+             AND res.`STATUS` in (2)
              AND DATE(res.TANGGALKUNJUNGAN) = CURDATE()
              ORDER BY res.ID ASC LIMIT 1) AS NO_ANTRIAN
         FROM layanan.order_resep or2
         JOIN pendaftaran.kunjungan k ON k.NOMOR = or2.KUNJUNGAN
         LEFT JOIN pendaftaran.pendaftaran p ON p.NOMOR = k.NOPEN
         LEFT JOIN master.pasien p2 ON p.NORM = p2.NORM
-        LEFT JOIN master.ruangan r ON r.ID = k.RUANGAN
+        LEFT JOIN master.ruangan r ON r.ID = k.RUANGAN 
         LEFT JOIN layanan.order_detil_resep odr ON odr.ORDER_ID = or2.NOMOR
         WHERE or2.TUJUAN = '$IDRUANGAN'
           AND or2.STATUS = $status
@@ -77,7 +78,7 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
              AND r2.DESKRIPSI NOT LIKE '%Laboratorium%'
              AND r2.DESKRIPSI NOT LIKE '%Radiologi%'
              AND (r2.DESKRIPSI LIKE '%Poli%' OR r2.DESKRIPSI LIKE '%REHAB%' OR r2.DESKRIPSI LIKE '%IGD%' OR r2.DESKRIPSI LIKE '%HEMO%')
-             ORDER BY k2.MASUK DESC LIMIT 1) AS ASAL_RUANGAN,
+             ORDER BY k2.MASUK ASC LIMIT 1) AS ASAL_RUANGAN,
             -- Ambil Status Racikan
             (
     SELECT MAX(CASE WHEN odr.RACIKAN = 1 THEN 1 ELSE 0 END)

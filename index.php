@@ -438,11 +438,12 @@ ini_set('display_errors', 1);
     }
     setInterval(cekPanggilan, 3000);
 
+    //ubah suara untuk Poli THT menjadi Te Ha Te
     function formatSuara(teks) {
         if (!teks) return "";
         let hasil = teks.toUpperCase();
         hasil = hasil.replace(/\bUGD\b/g, "Unit Gawat Darurat").replace(/\bIGD\b/g, "Instalasi Gawat Darurat").replace(
-            /\bPOLI\b/g, "Poli");
+            /\bPOLI\b/g, "Poli").replace(/\bTHT\b/g, "Te Ha Te");;
         return hasil.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
     }
 
@@ -467,7 +468,9 @@ ini_set('display_errors', 1);
     }
 
     function panggilSuara(nama, asal, nomor) {
-        responsiveVoice.speak(`Nomor Antrean ,${ejaNomorAntrean(nomor)},dari, ${formatSuara(asal)}, silakan mengambil obat di loket , farmasi`, "Indonesian Male");
+       responsiveVoice.speak(`Nomor Antrean ,${ejaNomorAntrean(nomor)},dari, ${formatSuara(asal)}, silakan mengambil obat di loket , farmasi`, "Indonesian Male");
+        console.log(asal);
+        console.log(formatSuara(asal));
     }
     </script>
 </body>
