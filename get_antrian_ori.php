@@ -24,6 +24,7 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
     $tanggal = isset($_REQUEST['tanggal']) && strtotime($_REQUEST['tanggal'])
         ? date('Y-m-d', strtotime($_REQUEST['tanggal']))
         : date('Y-m-d');
+    
     #$tanggal ='2026-08-18';
     if ($isOrder) {
         // QUERY BELUM DITERIMA (ORDER RESEP)
@@ -111,33 +112,21 @@ function ambilDataFarmasi($status, $koneksi, $IDRUANGAN, $isOrder = false)
 
     //die();
 
-    $result = $koneksi->query($sql);
-    $data   = [];
-
+    $result = $koneksi->query($sql);    
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-
+            // Pastikan NO_ANTRIAN dan ASAL_RUANGAN tidak kosong
             if (! $row['NO_ANTRIAN']) {
-                $row['NO_ANTRIAN'] = 'UMUM';
+                $row['NO_ANTRIAN'] = "UMUM";
             }
 
             if (! $row['ASAL_RUANGAN']) {
-                $row['ASAL_RUANGAN'] = 'Unit Terkait';
+                $row['ASAL_RUANGAN'] = "Unit Terkait";
             }
 
-            $data[] = [
-                'NORM'         => $row['NORM'],
-                'NOPEN'        => $row['NOPEN'],
-                'NAMA'         => $row['NAMA'],
-                'NAMA2'        => $row['NAMA2'],
-                'TANGGAL'      => $row['TANGGAL'],
-                'ASAL_RUANGAN' => $row['ASAL_RUANGAN'],
-                'RACIKAN'      => $row['RACIKAN'],
-                'NO_ANTRIAN'   => $row['NO_ANTRIAN'],
-            ];
+            $data[] = $row;
         }
     }
-
     return $data;
 }
 
