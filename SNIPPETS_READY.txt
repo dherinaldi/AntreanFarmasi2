@@ -1,0 +1,161 @@
+✅ READY-TO-USE CODE SNIPPETS
+
+FEATURE 1: AUTO-REFRESH (30 min)
+================================
+
+JavaScript (add to script):
+let autoRefreshEnabled = false;
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    if (autoRefreshEnabled) {
+        let countdown = 5;
+        loadData();
+        setInterval(() => {
+            countdown--;
+            $('#auto-timer').text(countdown + 's');
+            if (countdown <= 0) {
+                countdown = 5;
+                loadData();
+            }
+        }, 1000);
+    } else {
+        $('#auto-timer').text('OFF');
+    }
+}
+
+HTML (add button):
+<button onclick="toggleAutoRefresh()" id="btnToggleAuto">Auto: <span id="auto-timer">OFF</span></button>
+
+---
+
+FEATURE 2: COUNTERS (20 min)
+============================
+
+JavaScript:
+function updateCounters() {
+    $('#count-belum').text(belumData.length);
+    $('#count-dilayani').text(dilayaniData.length);
+    $('#count-selesai').text(selesaiData.length);
+}
+
+Call in loadData().done():
+updateCounters();
+
+HTML (add):
+<div>
+    <div>
+        <strong id="count-belum">0</strong>
+        <small>Belum Diterima</small>
+    </div>
+    <div>
+        <strong id="count-dilayani">0</strong>
+        <small>Dilayani</small>
+    </div>
+    <div>
+        <strong id="count-selesai">0</strong>
+        <small>Selesai</small>
+    </div>
+</div>
+
+---
+
+FEATURE 3: SOUND (25 min)
+=========================
+
+JavaScript:
+let lastCount = 0;
+
+function checkNewPatients() {
+    if (belumData.length > lastCount) {
+        playSound();
+        if (Notification.permission === 'granted') {
+            new Notification('Pasien Baru!', {
+                body: 'Ada ' + (belumData.length - lastCount) + ' pasien baru'
+            });
+        }
+    }
+    lastCount = belumData.length;
+}
+
+function playSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.5);
+    } catch(e) { }
+}
+
+Call in loadData().done():
+checkNewPatients();
+
+---
+
+FEATURE 4: SORTING (30 min)
+===========================
+
+JavaScript:
+function sortTableData(data, by) {
+    if (by === 'antrian') {
+        return data.sort((a, b) => {
+            const aa = parseInt(a.NO_ANTRIAN.split('-')[1] || 0);
+            const bb = parseInt(b.NO_ANTRIAN.split('-')[1] || 0);
+            return aa - bb;
+        });
+    }
+    if (by === 'nama') {
+        return data.sort((a, b) => a.NAMA.localeCompare(b.NAMA));
+    }
+    return data;
+}
+
+function setSortBelum(by) {
+    renderTable("#belum", sortTableData(belumData, by), true);
+}
+
+HTML (add buttons):
+<div style="display: flex; gap: 8px;">
+    <button onclick="setSortBelum('waktu')">Waktu</button>
+    <button onclick="setSortBelum('antrian')">Antrian</button>
+    <button onclick="setSortBelum('nama')">Nama</button>
+</div>
+
+---
+
+FEATURE 7: DEBOUNCE SEARCH (15 min)
+===================================
+
+JavaScript:
+let debounceTimer = null;
+
+$("#searchBelum").on("keyup", function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        const keyword = $(this).val().toLowerCase();
+        const filtered = belumData.filter(item => 
+            (item.NOPEN + item.NAMA + item.NORM).toLowerCase().includes(keyword)
+        );
+        renderTable("#belum", filtered, false);
+    }, 300);
+});
+
+---
+
+📋 IMPLEMENTATION TIMELINE
+
+Hour 1: Feature 1 (Auto-refresh)
+Hour 1: Feature 2 (Counters)
+Hour 2: Feature 3 (Sound)
+Hour 2: Feature 4 (Sorting)
+Hour 2: Feature 7 (Debounce)
+Hour 3: TESTING
+
+TOTAL: 3-4 hours complete optimization
+
+Status: Ready to Implement ✓
