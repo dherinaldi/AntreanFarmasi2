@@ -31,7 +31,7 @@ ini_set('display_errors', 1);
     }
 
     body {
-        background: radial-gradient(circle, #0a5d4e 0%, #063d33 100%);
+        background: #475868;
         color: var(--text-main);
         font-family: 'Inter', sans-serif;
         margin: 0;
@@ -40,7 +40,7 @@ ini_set('display_errors', 1);
     }
 
     #header-top {
-        background: var(--bg-dark);
+        background: #8b0000;
         color: white;
         padding: 15px 30px;
         font-size: 22px;
@@ -84,7 +84,7 @@ ini_set('display_errors', 1);
     }
 
     #nama-dipanggil {
-        background: linear-gradient(135deg, #0a5d4e 0%, #064e40 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#356aa0), color-stop(100%,#356aa0));
         border-radius: 20px;
         text-align: center;
         padding: 20px;
@@ -129,7 +129,7 @@ ini_set('display_errors', 1);
     .col-header {
         text-align: center;
         padding: 15px;
-        background: var(--primary-green);
+        background:  #1c354a;
         color: white;
     }
 
